@@ -35,4 +35,37 @@ const renderTasks = () => {
   });
 };
 
+const getID = () => {
+  if (tasksList.length > 0) {
+    return +tasksList[tasksList.length - 1].id;
+  } else {
+    return 0;
+  }
+};
+
+const createNewTask = () => {
+  const newtoDo = document.querySelector(".new-todo");
+  const id = getID() + 1;
+
+  const newTaskObj = {
+    id: id,
+    text: newtoDo.value,
+    complete: false,
+  };
+
+  tasksList.push(newTaskObj);
+
+  const newTask = createListItem(newTaskObj);
+
+  const view = document.querySelector(".view");
+  view.insertAdjacentHTML("afterbegin", newTask);
+  newtoDo.value = "";
+};
+
+document.querySelector(".new-todo").addEventListener("keydown", (e) => {
+  if (e.keyCode === 13) {
+    createNewTask();
+  }
+});
+
 renderTasks();
