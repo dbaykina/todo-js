@@ -18,15 +18,14 @@ const createListItem = (task) => {
   return `<li data-id="${task.id}" class ="${completeClass}">
     <div class="view">
         <input class="toggle" type="checkbox">
-        <button class="destroy"></button>
         <label>${task.text}</label>
-       <button></button>
+        <button class="destroy"></button> 
    </div>
 </li>    
 `;
 };
 
-const renderTasks = () => {
+const renderTasks = (tasksList) => {
   const toDoList = document.querySelector(".todo-list");
   toDoList.innerHTML = "";
   tasksList.forEach((item) => {
@@ -43,6 +42,7 @@ const getID = () => {
   }
 };
 
+//
 const createNewTask = () => {
   const newtoDo = document.querySelector(".new-todo");
   const id = getID() + 1;
@@ -54,11 +54,12 @@ const createNewTask = () => {
   };
 
   tasksList.push(newTaskObj);
+  console.log(tasksList);
 
   const newTask = createListItem(newTaskObj);
 
-  const view = document.querySelector(".view");
-  view.insertAdjacentHTML("afterbegin", newTask);
+  const toDoList = document.querySelector(".todo-list");
+  toDoList.insertAdjacentHTML("afterbegin", newTask);
   newtoDo.value = "";
 };
 
@@ -68,4 +69,23 @@ document.querySelector(".new-todo").addEventListener("keydown", (e) => {
   }
 });
 
-renderTasks();
+const deleteTask = (target) => {
+  const taskDelete = target.closest("li");
+  let taskDeleteId = taskDelete.getAttribute("data-id");
+  console.log(taskDelete, taskDeleteId);
+  tasksList.forEach((task, index) => {
+    if (task.id == taskDeleteId) {
+      tasksList.splice(index, 1);
+    }
+  });
+  renderTasks(tasksList);
+};
+
+document.querySelector(".todo-list").addEventListener("click", (e) => {
+  const target = e.target;
+  if (target.classList.contains("destroy")) {
+    deleteTask(target);
+  }
+});
+
+renderTasks(tasksList);
