@@ -93,7 +93,7 @@ const toggleTask = (target) => {
   const taskChecked = target.closest("li");
   tasksList.forEach((task) => {
     if (taskChecked.getAttribute("data-id") == task.id) {
-      if (task.completed == true) {
+      if (task.completed === true) {
         task.completed = false;
         taskChecked.classList.remove("completed");
       } else {
