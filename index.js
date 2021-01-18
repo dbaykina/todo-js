@@ -42,7 +42,7 @@ const getID = () => {
   }
 };
 
-//
+
 const createNewTask = () => {
   const newtoDo = document.querySelector(".new-todo");
   const id = getID() + 1;
@@ -54,7 +54,8 @@ const createNewTask = () => {
   };
 
   tasksList.push(newTaskObj);
-  console.log(tasksList);
+  
+  
 
   const newTask = createListItem(newTaskObj);
 
@@ -72,7 +73,7 @@ document.querySelector(".new-todo").addEventListener("keydown", (e) => {
 const deleteTask = (target) => {
   const taskDelete = target.closest("li");
   let taskDeleteId = taskDelete.getAttribute("data-id");
-  console.log(taskDelete, taskDeleteId);
+  
   tasksList.forEach((task, index) => {
     if (task.id == taskDeleteId) {
       tasksList.splice(index, 1);
