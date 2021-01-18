@@ -53,7 +53,7 @@ const createNewTask = () => {
   };
 
   tasksList.push(newTaskObj);
-
+  countActiveTasks();
   const newTask = createListItem(newTaskObj);
 
   const toDoList = document.querySelector(".todo-list");
@@ -76,6 +76,7 @@ const deleteTask = (target) => {
       tasksList.splice(index, 1);
     }
   });
+  countActiveTasks();
   renderTasks(tasksList);
 };
 
@@ -102,6 +103,21 @@ const toggleTask = (target) => {
       }
     }
   });
+  countActiveTasks();
+};
+
+const countActiveTasks = () => {
+  let footerCounter = document.querySelector(".todo-count strong");
+  let amount = 0;
+
+  tasksList.forEach((task) => {
+    if (task.completed == false) {
+      amount++;
+    }
+  });
+
+  footerCounter.textContent = amount;
 };
 
 renderTasks(tasksList);
+countActiveTasks();
