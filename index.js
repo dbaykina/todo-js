@@ -42,7 +42,6 @@ const getID = () => {
   }
 };
 
-
 const createNewTask = () => {
   const newtoDo = document.querySelector(".new-todo");
   const id = getID() + 1;
@@ -50,12 +49,10 @@ const createNewTask = () => {
   const newTaskObj = {
     id: id,
     text: newtoDo.value,
-    complete: false,
+    completed: false,
   };
 
   tasksList.push(newTaskObj);
-  
-  
 
   const newTask = createListItem(newTaskObj);
 
@@ -73,7 +70,7 @@ document.querySelector(".new-todo").addEventListener("keydown", (e) => {
 const deleteTask = (target) => {
   const taskDelete = target.closest("li");
   let taskDeleteId = taskDelete.getAttribute("data-id");
-  
+
   tasksList.forEach((task, index) => {
     if (task.id == taskDeleteId) {
       tasksList.splice(index, 1);
@@ -87,6 +84,24 @@ document.querySelector(".todo-list").addEventListener("click", (e) => {
   if (target.classList.contains("destroy")) {
     deleteTask(target);
   }
+  if (target.classList.contains("toggle")) {
+    toggleTask(target);
+  }
 });
+
+const toggleTask = (target) => {
+  const taskChecked = target.closest("li");
+  tasksList.forEach((task) => {
+    if (taskChecked.getAttribute("data-id") == task.id) {
+      if (task.completed == true) {
+        task.completed = false;
+        taskChecked.classList.remove("completed");
+      } else {
+        task.completed = true;
+        taskChecked.classList.add("completed");
+      }
+    }
+  });
+};
 
 renderTasks(tasksList);
