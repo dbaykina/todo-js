@@ -90,8 +90,7 @@ document.querySelector(".todo-list").addEventListener("click", (e) => {
   }
 });
 
-document.querySelector(".clear-completed").addEventListener('click', () => {
-  //console.log(document.querySelector(".clear-completed"));
+document.querySelector(".clear-completed").addEventListener("click", () => {
   deleteCompletedTasks();
 });
 
@@ -108,7 +107,7 @@ const toggleTask = (target) => {
       }
     }
   });
-  console.log(tasksList);
+
   countActiveTasks();
 };
 
@@ -126,15 +125,8 @@ const countActiveTasks = () => {
 };
 
 const deleteCompletedTasks = () => {
-  
-  tasksList = tasksList.filter((task) => {
-    
-    if(task.completed === false) {
-      return task;
-    }
-  })
-  
-  
+  tasksList = tasksList.filter((task) => !task.completed);
+
   renderTasks(tasksList);
 };
 
