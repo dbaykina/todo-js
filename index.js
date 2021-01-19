@@ -1,6 +1,6 @@
 "use strict";
 
-const tasksList = [
+let tasksList = [
   { id: "1", text: "выучить html", completed: true },
   { id: "2", text: "выучить css", completed: true },
   { id: "3", text: "выучить js", completed: false },
@@ -90,6 +90,11 @@ document.querySelector(".todo-list").addEventListener("click", (e) => {
   }
 });
 
+document.querySelector(".clear-completed").addEventListener('click', () => {
+  //console.log(document.querySelector(".clear-completed"));
+  deleteCompletedTasks();
+});
+
 const toggleTask = (target) => {
   const taskChecked = target.closest("li");
   tasksList.forEach((task) => {
@@ -103,6 +108,7 @@ const toggleTask = (target) => {
       }
     }
   });
+  console.log(tasksList);
   countActiveTasks();
 };
 
@@ -117,6 +123,19 @@ const countActiveTasks = () => {
   });
 
   footerCounter.textContent = amount;
+};
+
+const deleteCompletedTasks = () => {
+  
+  tasksList = tasksList.filter((task) => {
+    
+    if(task.completed === false) {
+      return task;
+    }
+  })
+  
+  
+  renderTasks(tasksList);
 };
 
 renderTasks(tasksList);
