@@ -1,8 +1,8 @@
 "use strict";
 
 let tasksList = [
-  { id: "1", text: "выучить html", completed: false },
-  { id: "2", text: "выучить css", completed: false },
+  { id: "1", text: "выучить html", completed: true },
+  { id: "2", text: "выучить css", completed: true },
   { id: "3", text: "выучить js", completed: false },
   { id: "4", text: "выучить фреймворк", completed: false },
   { id: "5", text: "написать несколько учебных проектов", completed: false },
@@ -130,6 +130,33 @@ const checkClearCompleted = () => {
   }
 };
 
+const filterTasks = (e) => {
+  const target = e.target;
+
+  document.querySelectorAll(".filters a").forEach((btn) => {
+    btn.classList.remove("selected");
+  });
+
+  let filterValue = target.getAttribute("href");
+
+  switch (filterValue) {
+    case "#/completed":
+      let completedTasks = tasksList.filter((task) => task.completed);
+      renderTasks(completedTasks);
+      target.classList.add("selected");
+      break;
+    case "#/active":
+      let activeTasks = tasksList.filter((task) => !task.completed);
+      renderTasks(activeTasks);
+      target.classList.add("selected");
+      break;
+    case "#/":
+      renderTasks(tasksList);
+      target.classList.add("selected");
+      break;
+  }
+};
+
 document.querySelector(".todo-list").addEventListener("click", (e) => {
   const target = e.target;
 
@@ -143,6 +170,12 @@ document.querySelector(".todo-list").addEventListener("click", (e) => {
 
 document.querySelector(".clear-completed").addEventListener("click", () => {
   deleteCompletedTasks();
+});
+
+document.querySelectorAll(".filters a").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    filterTasks(e);
+  });
 });
 
 renderTasks(tasksList);
