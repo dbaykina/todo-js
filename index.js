@@ -1,8 +1,8 @@
 "use strict";
 
 let tasksList = [
-  { id: "1", text: "выучить html", completed: false },
-  { id: "2", text: "выучить css", completed: false },
+  { id: "1", text: "выучить html", completed: true },
+  { id: "2", text: "выучить css", completed: true },
   { id: "3", text: "выучить js", completed: false },
   { id: "4", text: "выучить фреймворк", completed: false },
   { id: "5", text: "написать несколько учебных проектов", completed: false },
@@ -137,21 +137,23 @@ const filterTasks = (e) => {
     btn.classList.remove("selected");
   });
 
-  if (target.getAttribute("href") == "#/completed") {
-    let completedTasks = tasksList.filter((task) => task.completed);
+  let filterValue = target.getAttribute("href");
 
-    renderTasks(completedTasks);
-    target.classList.add("selected");
-  }
-
-  if (target.getAttribute("href") == "#/active") {
-    let activeTasks = tasksList.filter((task) => !task.completed);
-    renderTasks(activeTasks);
-    target.classList.add("selected");
-  }
-  if (target.getAttribute("href") == "#/") {
-    renderTasks(tasksList);
-    target.classList.add("selected");
+  switch (filterValue) {
+    case "#/completed":
+      let completedTasks = tasksList.filter((task) => task.completed);
+      renderTasks(completedTasks);
+      target.classList.add("selected");
+      break;
+    case "#/active":
+      let activeTasks = tasksList.filter((task) => !task.completed);
+      renderTasks(activeTasks);
+      target.classList.add("selected");
+      break;
+    case "#/":
+      renderTasks(tasksList);
+      target.classList.add("selected");
+      break;
   }
 };
 
