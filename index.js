@@ -130,6 +130,31 @@ const checkClearCompleted = () => {
   }
 };
 
+const filterTasks = (e) => {
+  const target = e.target;
+
+  document.querySelectorAll(".filters a").forEach((btn) => {
+    btn.classList.remove("selected");
+  });
+
+  if (target.getAttribute("href") == "#/completed") {
+    let completedTasks = tasksList.filter((task) => task.completed);
+
+    renderTasks(completedTasks);
+    target.classList.add("selected");
+  }
+
+  if (target.getAttribute("href") == "#/active") {
+    let activeTasks = tasksList.filter((task) => !task.completed);
+    renderTasks(activeTasks);
+    target.classList.add("selected");
+  }
+  if (target.getAttribute("href") == "#/") {
+    renderTasks(tasksList);
+    target.classList.add("selected");
+  }
+};
+
 document.querySelector(".todo-list").addEventListener("click", (e) => {
   const target = e.target;
 
@@ -143,6 +168,12 @@ document.querySelector(".todo-list").addEventListener("click", (e) => {
 
 document.querySelector(".clear-completed").addEventListener("click", () => {
   deleteCompletedTasks();
+});
+
+document.querySelectorAll(".filters a").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    filterTasks(e);
+  });
 });
 
 renderTasks(tasksList);
