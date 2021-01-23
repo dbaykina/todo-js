@@ -1,8 +1,8 @@
 "use strict";
 
 let tasksList = [
-  { id: "1", text: "выучить html", completed: true },
-  { id: "2", text: "выучить css", completed: true },
+  { id: "1", text: "выучить html", completed: false },
+  { id: "2", text: "выучить css", completed: false },
   { id: "3", text: "выучить js", completed: false },
   { id: "4", text: "выучить фреймворк", completed: false },
   { id: "5", text: "написать несколько учебных проектов", completed: false },
@@ -12,12 +12,14 @@ let tasksList = [
 
 const createListItem = (task) => {
   let completeClass = "";
-  if (task.completed == true) {
+  let checked = "";
+  if (task.completed === true) {
     completeClass = "completed";
+    checked = "checked";
   }
   return `<li data-id="${task.id}" class ="${completeClass}">
     <div class="view">
-        <input class="toggle" type="checkbox">
+        <input class="toggle" type="checkbox" ${checked}>
         <label>${task.text}</label>
         <button class="destroy"></button> 
    </div>
@@ -78,21 +80,8 @@ const deleteTask = (target) => {
   });
   countActiveTasks();
   renderTasks(tasksList);
+  checkClearCompleted();
 };
-
-document.querySelector(".todo-list").addEventListener("click", (e) => {
-  const target = e.target;
-  if (target.classList.contains("destroy")) {
-    deleteTask(target);
-  }
-  if (target.classList.contains("toggle")) {
-    toggleTask(target);
-  }
-});
-
-document.querySelector(".clear-completed").addEventListener("click", () => {
-  deleteCompletedTasks();
-});
 
 const toggleTask = (target) => {
   const taskChecked = target.closest("li");
@@ -106,6 +95,7 @@ const toggleTask = (target) => {
         taskChecked.classList.add("completed");
       }
     }
+    checkClearCompleted();
   });
 
   countActiveTasks();
@@ -130,5 +120,31 @@ const deleteCompletedTasks = () => {
   renderTasks(tasksList);
 };
 
+const checkClearCompleted = () => {
+  const clearBtn = document.querySelector(".clear-completed");
+  const taskCompleted = tasksList.find((task) => task.completed === true);
+  if (taskCompleted) {
+    clearBtn.style.display = "block";
+  } else {
+    clearBtn.style.display = "none";
+  }
+};
+
+document.querySelector(".todo-list").addEventListener("click", (e) => {
+  const target = e.target;
+
+  if (target.classList.contains("destroy")) {
+    deleteTask(target);
+  }
+  if (target.classList.contains("toggle")) {
+    toggleTask(target);
+  }
+});
+
+document.querySelector(".clear-completed").addEventListener("click", () => {
+  deleteCompletedTasks();
+});
+
 renderTasks(tasksList);
 countActiveTasks();
+checkClearCompleted();
