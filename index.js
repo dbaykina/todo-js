@@ -10,6 +10,8 @@ let tasksList = [
   { id: "7", text: "получить работу", completed: false },
 ];
 
+//let tasksList = [];
+
 const createListItem = (task) => {
   let completeClass = "";
   let checked = "";
@@ -61,13 +63,8 @@ const createNewTask = () => {
   const toDoList = document.querySelector(".todo-list");
   toDoList.insertAdjacentHTML("afterbegin", newTask);
   newtoDo.value = "";
+  checkFooter();
 };
-
-document.querySelector(".new-todo").addEventListener("keydown", (e) => {
-  if (e.keyCode === 13) {
-    createNewTask();
-  }
-});
 
 const deleteTask = (target) => {
   const taskDelete = target.closest("li");
@@ -81,6 +78,7 @@ const deleteTask = (target) => {
   countActiveTasks();
   renderTasks(tasksList);
   checkClearCompleted();
+  checkFooter();
 };
 
 const toggleTask = (target) => {
@@ -96,6 +94,7 @@ const toggleTask = (target) => {
       }
     }
     checkClearCompleted();
+    
   });
 
   countActiveTasks();
@@ -118,6 +117,7 @@ const deleteCompletedTasks = () => {
   tasksList = tasksList.filter((task) => !task.completed);
 
   renderTasks(tasksList);
+  checkFooter();
 };
 
 const checkClearCompleted = () => {
@@ -157,6 +157,15 @@ const filterTasks = (e) => {
   }
 };
 
+const checkFooter = () => {
+  const footer = document.querySelector(".footer");
+  if (tasksList.length !== 0) {
+    footer.style.display = "block";
+  } else {
+    footer.style.display = "none";
+  }
+};
+
 document.querySelector(".todo-list").addEventListener("click", (e) => {
   const target = e.target;
 
@@ -165,6 +174,12 @@ document.querySelector(".todo-list").addEventListener("click", (e) => {
   }
   if (target.classList.contains("toggle")) {
     toggleTask(target);
+  }
+});
+
+document.querySelector(".new-todo").addEventListener("keydown", (e) => {
+  if (e.keyCode === 13) {
+    createNewTask();
   }
 });
 
@@ -181,3 +196,4 @@ document.querySelectorAll(".filters a").forEach((btn) => {
 renderTasks(tasksList);
 countActiveTasks();
 checkClearCompleted();
+checkFooter();
