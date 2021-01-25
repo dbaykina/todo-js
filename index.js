@@ -1,15 +1,13 @@
 "use strict";
 
-
 const getTasksList = () => {
   return JSON.parse(localStorage.getItem("tasksList")) ?? [];
 };
 
-  const updateLocalStorage = (tasksList) => {
-    localStorage.setItem("tasksList", JSON.stringify(tasksList));
-    return JSON.parse(localStorage.getItem("tasksList")) ?? [];
-  };
-
+const updateLocalStorage = (tasksList) => {
+  localStorage.setItem("tasksList", JSON.stringify(tasksList));
+  return JSON.parse(localStorage.getItem("tasksList")) ?? [];
+};
 
 const createListItem = (task) => {
   let completeClass = "";
@@ -119,7 +117,6 @@ const deleteCompletedTasks = (tasksList) => {
   tasksList = updateLocalStorage(tasksList);
   renderTasks(tasksList);
   checkFooter(tasksList);
-
 };
 
 const checkClearCompleted = (tasksList) => {
@@ -140,24 +137,26 @@ const filterTasks = (e, tasksList) => {
   });
 
   let filterValue = target.getAttribute("href");
-  tasksList = updateLocalStorage(tasksList);
- 
+  let selectedTask = [];
+
   switch (filterValue) {
     case "#/completed":
-      let completedTasks = tasksList.filter((task) => task.completed);
-      renderTasks(completedTasks);
+      selectedTask = tasksList.filter((task) => task.completed);
+      
       target.classList.add("selected");
       break;
     case "#/active":
-      let activeTasks = tasksList.filter((task) => !task.completed);
-      renderTasks(activeTasks);
+      selectedTask = tasksList.filter((task) => !task.completed);
+      
       target.classList.add("selected");
       break;
     case "#/":
-      renderTasks(tasksList);
+      selectedTask = getTasksList();
       target.classList.add("selected");
       break;
   }
+  
+  renderTasks(selectedTask);
 };
 
 const checkFooter = (tasksList) => {
@@ -169,8 +168,6 @@ const checkFooter = (tasksList) => {
   }
 };
 
-
-
 document.querySelector(".todo-list").addEventListener("click", (e) => {
   const target = e.target;
 
@@ -180,7 +177,7 @@ document.querySelector(".todo-list").addEventListener("click", (e) => {
   }
   if (target.classList.contains("toggle")) {
     let tasksList = getTasksList();
-    toggleTask(target,tasksList);
+    toggleTask(target, tasksList);
   }
 });
 
@@ -202,7 +199,6 @@ document.querySelectorAll(".filters a").forEach((btn) => {
     filterTasks(e, tasksList);
   });
 });
-
 
 let tasksList = getTasksList();
 renderTasks(tasksList);
