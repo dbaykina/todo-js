@@ -1,16 +1,13 @@
 "use strict";
 
-let tasksList = [
-  { id: "1", text: "выучить html", completed: true },
-  { id: "2", text: "выучить css", completed: true },
-  { id: "3", text: "выучить js", completed: false },
-  { id: "4", text: "выучить фреймворк", completed: false },
-  { id: "5", text: "написать несколько учебных проектов", completed: false },
-  { id: "6", text: "пройти собеседование", completed: false },
-  { id: "7", text: "получить работу", completed: false },
-];
+const getTasksList = () => {
+  return JSON.parse(localStorage.getItem("tasksList")) ?? [];
+};
 
-//let tasksList = [];
+const updateLocalStorage = (tasksList) => {
+  localStorage.setItem("tasksList", JSON.stringify(tasksList));
+  return JSON.parse(localStorage.getItem("tasksList")) ?? [];
+};
 
 const createListItem = (task) => {
   let completeClass = "";
@@ -38,7 +35,7 @@ const renderTasks = (tasksList) => {
   });
 };
 
-const getID = () => {
+const getID = (tasksList) => {
   if (tasksList.length > 0) {
     return +tasksList[tasksList.length - 1].id;
   } else {
@@ -46,9 +43,9 @@ const getID = () => {
   }
 };
 
-const createNewTask = () => {
+const createNewTask = (tasksList) => {
   const newtoDo = document.querySelector(".new-todo");
-  const id = getID() + 1;
+  const id = getID(tasksList) + 1;
 
   const newTaskObj = {
     id: id,
@@ -57,16 +54,17 @@ const createNewTask = () => {
   };
 
   tasksList.push(newTaskObj);
-  countActiveTasks();
+  tasksList = updateLocalStorage(tasksList);
+  countActiveTasks(tasksList);
   const newTask = createListItem(newTaskObj);
 
   const toDoList = document.querySelector(".todo-list");
   toDoList.insertAdjacentHTML("afterbegin", newTask);
   newtoDo.value = "";
-  checkFooter();
+  checkFooter(tasksList);
 };
 
-const deleteTask = (target) => {
+const deleteTask = (target, tasksList) => {
   const taskDelete = target.closest("li");
   let taskDeleteId = taskDelete.getAttribute("data-id");
 
@@ -75,13 +73,15 @@ const deleteTask = (target) => {
       tasksList.splice(index, 1);
     }
   });
-  countActiveTasks();
+
+  tasksList = updateLocalStorage(tasksList);
+  countActiveTasks(tasksList);
   renderTasks(tasksList);
-  checkClearCompleted();
-  checkFooter();
+  checkClearCompleted(tasksList);
+  checkFooter(tasksList);
 };
 
-const toggleTask = (target) => {
+const toggleTask = (target, tasksList) => {
   const taskChecked = target.closest("li");
   tasksList.forEach((task) => {
     if (taskChecked.getAttribute("data-id") == task.id) {
@@ -93,14 +93,13 @@ const toggleTask = (target) => {
         taskChecked.classList.add("completed");
       }
     }
-    checkClearCompleted();
-    
+    checkClearCompleted(tasksList);
   });
-
-  countActiveTasks();
+  tasksList = updateLocalStorage(tasksList);
+  countActiveTasks(tasksList);
 };
 
-const countActiveTasks = () => {
+const countActiveTasks = (tasksList) => {
   let footerCounter = document.querySelector(".todo-count strong");
   let amount = 0;
 
@@ -113,14 +112,14 @@ const countActiveTasks = () => {
   footerCounter.textContent = amount;
 };
 
-const deleteCompletedTasks = () => {
+const deleteCompletedTasks = (tasksList) => {
   tasksList = tasksList.filter((task) => !task.completed);
-
+  tasksList = updateLocalStorage(tasksList);
   renderTasks(tasksList);
-  checkFooter();
+  checkFooter(tasksList);
 };
 
-const checkClearCompleted = () => {
+const checkClearCompleted = (tasksList) => {
   const clearBtn = document.querySelector(".clear-completed");
   const taskCompleted = tasksList.find((task) => task.completed === true);
   if (taskCompleted) {
@@ -130,7 +129,7 @@ const checkClearCompleted = () => {
   }
 };
 
-const filterTasks = (e) => {
+const filterTasks = (e, tasksList) => {
   const target = e.target;
 
   document.querySelectorAll(".filters a").forEach((btn) => {
@@ -138,26 +137,29 @@ const filterTasks = (e) => {
   });
 
   let filterValue = target.getAttribute("href");
+  let selectedTask = [];
 
   switch (filterValue) {
     case "#/completed":
-      let completedTasks = tasksList.filter((task) => task.completed);
-      renderTasks(completedTasks);
+      selectedTask = tasksList.filter((task) => task.completed);
+      
       target.classList.add("selected");
       break;
     case "#/active":
-      let activeTasks = tasksList.filter((task) => !task.completed);
-      renderTasks(activeTasks);
+      selectedTask = tasksList.filter((task) => !task.completed);
+      
       target.classList.add("selected");
       break;
     case "#/":
-      renderTasks(tasksList);
+      selectedTask = getTasksList();
       target.classList.add("selected");
       break;
   }
+  
+  renderTasks(selectedTask);
 };
 
-const checkFooter = () => {
+const checkFooter = (tasksList) => {
   const footer = document.querySelector(".footer");
   if (tasksList.length !== 0) {
     footer.style.display = "block";
@@ -170,30 +172,36 @@ document.querySelector(".todo-list").addEventListener("click", (e) => {
   const target = e.target;
 
   if (target.classList.contains("destroy")) {
-    deleteTask(target);
+    let tasksList = getTasksList();
+    deleteTask(target, tasksList);
   }
   if (target.classList.contains("toggle")) {
-    toggleTask(target);
+    let tasksList = getTasksList();
+    toggleTask(target, tasksList);
   }
 });
 
 document.querySelector(".new-todo").addEventListener("keydown", (e) => {
   if (e.keyCode === 13) {
-    createNewTask();
+    let tasksList = getTasksList();
+    createNewTask(tasksList);
   }
 });
 
 document.querySelector(".clear-completed").addEventListener("click", () => {
-  deleteCompletedTasks();
+  let tasksList = getTasksList();
+  deleteCompletedTasks(tasksList);
 });
 
 document.querySelectorAll(".filters a").forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    filterTasks(e);
+    let tasksList = getTasksList();
+    filterTasks(e, tasksList);
   });
 });
 
+let tasksList = getTasksList();
 renderTasks(tasksList);
-countActiveTasks();
-checkClearCompleted();
-checkFooter();
+countActiveTasks(tasksList);
+checkClearCompleted(tasksList);
+checkFooter(tasksList);
