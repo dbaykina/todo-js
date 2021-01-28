@@ -130,24 +130,44 @@ const checkClearCompleted = (tasksList) => {
 };
 
 const filterTasks = (e, tasksList) => {
-  const target = e.target;
+  
+  let filterValue = '';
+  let target = '';
 
-  document.querySelectorAll(".filters a").forEach((btn) => {
+  let buttonFilters = document.querySelectorAll(".filters a");
+  
+  if(typeof e == 'object'){
+
+    target = e.target;
+    filterValue = target.getAttribute("href");
+
+  }else if(typeof e == 'string'){
+    
+    buttonFilters.forEach(btn => {
+      if(btn.getAttribute("href") == e){
+        target = btn;
+      }
+    });
+    
+    filterValue = e;
+  }
+  
+  buttonFilters.forEach((btn) => {
     btn.classList.remove("selected");
   });
-
-  let filterValue = target.getAttribute("href");
+   
+  
   let selectedTask = [];
 
   switch (filterValue) {
     case "#/completed":
       selectedTask = tasksList.filter((task) => task.completed);
-      
+
       target.classList.add("selected");
       break;
     case "#/active":
       selectedTask = tasksList.filter((task) => !task.completed);
-      
+
       target.classList.add("selected");
       break;
     case "#/":
@@ -155,8 +175,8 @@ const filterTasks = (e, tasksList) => {
       target.classList.add("selected");
       break;
   }
-  
-  renderTasks(selectedTask);
+
+  return selectedTask;
 };
 
 const checkFooter = (tasksList) => {
@@ -167,6 +187,17 @@ const checkFooter = (tasksList) => {
     footer.style.display = "none";
   }
 };
+
+const checkFilter = (tasksList) => {
+  const hash = location.hash;
+
+  if(hash){
+    return filterTasks(hash, tasksList);
+  }
+
+  return tasksList;
+}
+
 
 document.querySelector(".todo-list").addEventListener("click", (e) => {
   const target = e.target;
@@ -196,12 +227,19 @@ document.querySelector(".clear-completed").addEventListener("click", () => {
 document.querySelectorAll(".filters a").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     let tasksList = getTasksList();
-    filterTasks(e, tasksList);
+    const selectedTask = filterTasks(e, tasksList);
+    renderTasks(selectedTask);
   });
 });
 
+
+
 let tasksList = getTasksList();
+checkFooter(tasksList);
+
+tasksList = checkFilter(tasksList);
+
 renderTasks(tasksList);
 countActiveTasks(tasksList);
 checkClearCompleted(tasksList);
-checkFooter(tasksList);
+
