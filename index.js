@@ -129,34 +129,22 @@ const checkClearCompleted = (tasksList) => {
   }
 };
 
-const filterTasks = (e, tasksList) => {
-  const target = e.target;
-
-  document.querySelectorAll(".filters a").forEach((btn) => {
-    btn.classList.remove("selected");
-  });
-
-  let filterValue = target.getAttribute("href");
+const filterTasks = (filterValue, tasksList) => {
   let selectedTask = [];
 
   switch (filterValue) {
     case "#/completed":
       selectedTask = tasksList.filter((task) => task.completed);
-      
-      target.classList.add("selected");
       break;
     case "#/active":
       selectedTask = tasksList.filter((task) => !task.completed);
-      
-      target.classList.add("selected");
       break;
     case "#/":
       selectedTask = getTasksList();
-      target.classList.add("selected");
       break;
   }
-  
-  renderTasks(selectedTask);
+
+  return selectedTask;
 };
 
 const checkFooter = (tasksList) => {
@@ -166,6 +154,17 @@ const checkFooter = (tasksList) => {
   } else {
     footer.style.display = "none";
   }
+};
+
+const checkFilter = (tasksList) => {
+  const hash = location.hash;
+
+  if (hash) {
+    removeClass(hash);
+    return filterTasks(hash, tasksList);
+  }
+
+  return tasksList;
 };
 
 document.querySelector(".todo-list").addEventListener("click", (e) => {
@@ -196,12 +195,31 @@ document.querySelector(".clear-completed").addEventListener("click", () => {
 document.querySelectorAll(".filters a").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     let tasksList = getTasksList();
-    filterTasks(e, tasksList);
+
+    let filterValue = e.target.getAttribute("href");
+    const selectedTask = filterTasks(filterValue, tasksList);
+
+    removeClass(filterValue);
+
+    renderTasks(selectedTask);
   });
 });
 
+const removeClass = (href) => {
+  document.querySelectorAll(".filters a").forEach((btn) => {
+    if (btn.getAttribute("href") == href) {
+      btn.classList.add("selected");
+    } else {
+      btn.classList.remove("selected");
+    }
+  });
+};
+
 let tasksList = getTasksList();
+checkFooter(tasksList);
+
+tasksList = checkFilter(tasksList);
+
 renderTasks(tasksList);
 countActiveTasks(tasksList);
 checkClearCompleted(tasksList);
-checkFooter(tasksList);
