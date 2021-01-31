@@ -129,50 +129,19 @@ const checkClearCompleted = (tasksList) => {
   }
 };
 
-const filterTasks = (e, tasksList) => {
-  
-  let filterValue = '';
-  let target = '';
-
-  let buttonFilters = document.querySelectorAll(".filters a");
-  
-  if(typeof e == 'object'){
-
-    target = e.target;
-    filterValue = target.getAttribute("href");
-
-  }else if(typeof e == 'string'){
-    
-    buttonFilters.forEach(btn => {
-      if(btn.getAttribute("href") == e){
-        target = btn;
-      }
-    });
-    
-    filterValue = e;
-  }
-  
-  buttonFilters.forEach((btn) => {
-    btn.classList.remove("selected");
-  });
-   
+const filterTasks = (filterValue, tasksList) => {
   
   let selectedTask = [];
 
   switch (filterValue) {
     case "#/completed":
       selectedTask = tasksList.filter((task) => task.completed);
-
-      target.classList.add("selected");
       break;
     case "#/active":
       selectedTask = tasksList.filter((task) => !task.completed);
-
-      target.classList.add("selected");
       break;
     case "#/":
       selectedTask = getTasksList();
-      target.classList.add("selected");
       break;
   }
 
@@ -192,6 +161,7 @@ const checkFilter = (tasksList) => {
   const hash = location.hash;
 
   if(hash){
+    removeClass(hash);
     return filterTasks(hash, tasksList);
   }
 
@@ -225,14 +195,30 @@ document.querySelector(".clear-completed").addEventListener("click", () => {
 });
 
 document.querySelectorAll(".filters a").forEach((btn) => {
+  
   btn.addEventListener("click", (e) => {
     let tasksList = getTasksList();
-    const selectedTask = filterTasks(e, tasksList);
+    
+    
+    let filterValue = e.target.getAttribute("href");
+    const selectedTask = filterTasks(filterValue, tasksList);
+    
+    removeClass(filterValue);
+    
     renderTasks(selectedTask);
+
   });
 });
 
-
+const removeClass = (href) => {
+  document.querySelectorAll(".filters a").forEach((btn)=>{
+    if(btn.getAttribute("href") == href){
+      btn.classList.add("selected");
+    }else{
+      btn.classList.remove("selected");
+    }
+  });
+}
 
 let tasksList = getTasksList();
 checkFooter(tasksList);
@@ -243,3 +229,27 @@ renderTasks(tasksList);
 countActiveTasks(tasksList);
 checkClearCompleted(tasksList);
 
+/*
+let filterValue = '';
+  let target = '';
+
+  let buttonFilters = document.querySelectorAll(".filters a");
+  
+  if(typeof e == 'object'){
+
+    target = e.target;
+    filterValue = target.getAttribute("href");
+
+  }else if(typeof e == 'string'){
+    
+    buttonFilters.forEach(btn => {
+      if(btn.getAttribute("href") == e){
+        target = btn;
+      }
+    });
+    
+    filterValue = e;
+  }
+  
+  
+  */
