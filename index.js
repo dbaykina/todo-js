@@ -130,7 +130,6 @@ const checkClearCompleted = (tasksList) => {
 };
 
 const filterTasks = (filterValue, tasksList) => {
-  
   let selectedTask = [];
 
   switch (filterValue) {
@@ -160,14 +159,13 @@ const checkFooter = (tasksList) => {
 const checkFilter = (tasksList) => {
   const hash = location.hash;
 
-  if(hash){
+  if (hash) {
     removeClass(hash);
     return filterTasks(hash, tasksList);
   }
 
   return tasksList;
-}
-
+};
 
 document.querySelector(".todo-list").addEventListener("click", (e) => {
   const target = e.target;
@@ -195,30 +193,27 @@ document.querySelector(".clear-completed").addEventListener("click", () => {
 });
 
 document.querySelectorAll(".filters a").forEach((btn) => {
-  
   btn.addEventListener("click", (e) => {
     let tasksList = getTasksList();
-    
-    
+
     let filterValue = e.target.getAttribute("href");
     const selectedTask = filterTasks(filterValue, tasksList);
-    
-    removeClass(filterValue);
-    
-    renderTasks(selectedTask);
 
+    removeClass(filterValue);
+
+    renderTasks(selectedTask);
   });
 });
 
 const removeClass = (href) => {
-  document.querySelectorAll(".filters a").forEach((btn)=>{
-    if(btn.getAttribute("href") == href){
+  document.querySelectorAll(".filters a").forEach((btn) => {
+    if (btn.getAttribute("href") == href) {
       btn.classList.add("selected");
-    }else{
+    } else {
       btn.classList.remove("selected");
     }
   });
-}
+};
 
 let tasksList = getTasksList();
 checkFooter(tasksList);
@@ -228,28 +223,3 @@ tasksList = checkFilter(tasksList);
 renderTasks(tasksList);
 countActiveTasks(tasksList);
 checkClearCompleted(tasksList);
-
-/*
-let filterValue = '';
-  let target = '';
-
-  let buttonFilters = document.querySelectorAll(".filters a");
-  
-  if(typeof e == 'object'){
-
-    target = e.target;
-    filterValue = target.getAttribute("href");
-
-  }else if(typeof e == 'string'){
-    
-    buttonFilters.forEach(btn => {
-      if(btn.getAttribute("href") == e){
-        target = btn;
-      }
-    });
-    
-    filterValue = e;
-  }
-  
-  
-  */
