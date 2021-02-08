@@ -9,29 +9,57 @@ const updateLocalStorage = (tasksList) => {
   return JSON.parse(localStorage.getItem("tasksList")) ?? [];
 };
 
-const createListItem = (task) => {
-  let completeClass = "";
-  let checked = "";
+const eventProcessing = (el, cb) => {
+  el.addEventListener("click", (e) => {
+    const taskList = getTasksList();
+    cb(e.target, taskList);
+  });
+};
+
+const getListItemTmp = (task) => {
+  let listItem = document.createElement("li");
+  listItem.setAttribute("data-id", task.id);
+
+  let listItemDiv = document.createElement("div");
+  listItemDiv.classList.add("view");
+
+  let input = document.createElement("input");
+  input.classList.add("toggle");
+  input.type = "checkbox";
+
+  let label = document.createElement("label");
+  label.innerText = task.text;
+
+  let button = document.createElement("button");
+  button.classList.add("destroy");
+
+  listItemDiv.appendChild(input);
+  listItemDiv.appendChild(label);
+  listItemDiv.appendChild(button);
+
+  listItem.appendChild(listItemDiv);
+
   if (task.completed === true) {
-    completeClass = "completed";
-    checked = "checked";
+    listItem.classList.add("completed");
+    input.checked = true;
   }
-  return `<li data-id="${task.id}" class ="${completeClass}">
-    <div class="view">
-        <input class="toggle" type="checkbox" ${checked}>
-        <label>${task.text}</label>
-        <button class="destroy"></button> 
-   </div>
-</li>    
-`;
+
+  return listItem;
 };
 
 const renderTasks = (tasksList) => {
   const toDoList = document.querySelector(".todo-list");
   toDoList.innerHTML = "";
   tasksList.forEach((item) => {
-    const itemHTML = createListItem(item);
-    toDoList.insertAdjacentHTML("afterbegin", itemHTML);
+  const itemHTML = getListItemTmp(item);
+
+    let checkedInput = itemHTML.querySelector(".toggle");
+    let destroyButton = itemHTML.querySelector(".destroy");
+
+    eventProcessing(checkedInput, toggleTask);
+    eventProcessing(destroyButton, deleteTask);
+
+    toDoList.appendChild(itemHTML);
   });
 };
 
@@ -56,10 +84,15 @@ const createNewTask = (tasksList) => {
   tasksList.push(newTaskObj);
   tasksList = updateLocalStorage(tasksList);
   countActiveTasks(tasksList);
-  const newTask = createListItem(newTaskObj);
+  const newTask = getListItemTmp(newTaskObj);
+
+  let checkedInput = newTask.querySelector(".toggle");
+  let destroyButton = newTask.querySelector(".destroy");
+  eventProcessing(checkedInput, toggleTask);
+  eventProcessing(destroyButton, deleteTask);
 
   const toDoList = document.querySelector(".todo-list");
-  toDoList.insertAdjacentHTML("afterbegin", newTask);
+  toDoList.appendChild(newTask);
   newtoDo.value = "";
   checkFooter(tasksList);
 };
@@ -115,8 +148,9 @@ const countActiveTasks = (tasksList) => {
 const deleteCompletedTasks = (tasksList) => {
   tasksList = tasksList.filter((task) => !task.completed);
   tasksList = updateLocalStorage(tasksList);
-  renderTasks(tasksList);
-  checkFooter(tasksList);
+  const completedTasks = tasksList.filter((task) => task.completed);
+  renderTasks(completedTasks);
+  checkClearCompleted(completedTasks);
 };
 
 const checkClearCompleted = (tasksList) => {
@@ -147,6 +181,16 @@ const filterTasks = (filterValue, tasksList) => {
   return selectedTask;
 };
 
+const checkFilter = (tasksList) => {
+  const hash = location.hash;
+
+  if (hash) {
+    toggleFilterClass(hash);
+    return filterTasks(hash, tasksList);
+  }
+  return tasksList;
+};
+
 const checkFooter = (tasksList) => {
   const footer = document.querySelector(".footer");
   if (tasksList.length !== 0) {
@@ -155,30 +199,6 @@ const checkFooter = (tasksList) => {
     footer.style.display = "none";
   }
 };
-
-const checkFilter = (tasksList) => {
-  const hash = location.hash;
-
-  if (hash) {
-    removeClass(hash);
-    return filterTasks(hash, tasksList);
-  }
-
-  return tasksList;
-};
-
-document.querySelector(".todo-list").addEventListener("click", (e) => {
-  const target = e.target;
-
-  if (target.classList.contains("destroy")) {
-    let tasksList = getTasksList();
-    deleteTask(target, tasksList);
-  }
-  if (target.classList.contains("toggle")) {
-    let tasksList = getTasksList();
-    toggleTask(target, tasksList);
-  }
-});
 
 document.querySelector(".new-todo").addEventListener("keydown", (e) => {
   if (e.keyCode === 13) {
@@ -199,13 +219,13 @@ document.querySelectorAll(".filters a").forEach((btn) => {
     let filterValue = e.target.getAttribute("href");
     const selectedTask = filterTasks(filterValue, tasksList);
 
-    removeClass(filterValue);
+    toggleFilterClass(filterValue);
 
     renderTasks(selectedTask);
   });
 });
 
-const removeClass = (href) => {
+const toggleFilterClass = (href) => {
   document.querySelectorAll(".filters a").forEach((btn) => {
     if (btn.getAttribute("href") == href) {
       btn.classList.add("selected");
