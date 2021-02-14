@@ -25,8 +25,8 @@ const initApp = () => {
   deleteCompletedTasksListener();
   //.Listeners
 
+    
 };
-
 
 initApp();
 

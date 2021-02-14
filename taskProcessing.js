@@ -6,6 +6,7 @@ import { eventProcessing } from "./handlers.js";
 import { renderTasks } from "./render.js";
 import { checkClearCompleted } from "./footer.js";
 import { toggleTask } from "./state.js";
+import { checkFilter } from "./filter.js";
 
 const getID = (tasksList) => {
   if (tasksList.length > 0) {
@@ -61,9 +62,13 @@ export const deleteTask = (target, tasksList) => {
 export const deleteCompletedTasks = (tasksList) => {
   tasksList = tasksList.filter((task) => !task.completed);
   tasksList = updateLocalStorage(tasksList);
-  const completedTasks = tasksList.filter((task) => task.completed);
+  tasksList = checkFilter(tasksList);
+  renderTasks(tasksList);
+  checkClearCompleted(tasksList);
+  //const completedTasks = tasksList.filter((task) => task.completed);
+  /*let completedTasks = tasksList;
   renderTasks(completedTasks);
-  checkClearCompleted(completedTasks);
+  checkClearCompleted(completedTasks);*/
 };
 
 export const deleteCompletedTasksListener = () => {
@@ -74,12 +79,13 @@ document.querySelector(".clear-completed").addEventListener("click", () => {
 }
 
 export const addNewTaskListener = () => {
-  document.querySelector(".new-todo").addEventListener("keydown", (e) => {
-    if (e.keyCode === 13) {
-      let tasksList = getTasksList();
-      createNewTask(tasksList);
-    }
+
+  document.querySelector(".input-form").addEventListener('submit', (e) => {
+    e.preventDefault();
+    let tasksList = getTasksList();
+    createNewTask(tasksList);
   });
+
 };
 
 
