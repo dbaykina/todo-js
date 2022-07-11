@@ -1,3 +1,3 @@
 # js-todo-tamplate
 
-To-do list on Java Script.
+ A classic to do list on JS. Allows user to add, delete, edit tasks.
